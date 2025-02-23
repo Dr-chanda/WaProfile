@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Profile Changer</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #25d366; /* WhatsApp Green */
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        textarea {
+            width: 95%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Important to include padding in width */
+        }
+
+        button {
+            background-color: #25d366; /* WhatsApp Green */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #128c7e; /* Darker WhatsApp Green */
+        }
+
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>WhatsApp Profile Changer</h1>
+
+        <label for="phoneNumber">Phone Number (with country code):</label>
+        <input type="text" id="phoneNumber" name="phoneNumber" placeholder="+15551234567">
+
+        <label for="profilePhoto">Upload Profile Photo:</label>
+        <input type="file" id="profilePhoto" name="profilePhoto" accept="image/*">
+
+        <label for="userName">User Name:</label>
+        <input type="text" id="userName" name="userName" placeholder="Your Name">
+
+        <label for="about">About:</label>
+        <textarea id="about" name="about" rows="3" placeholder="About you"></textarea>
+
+        <label for="verificationCode">Verification Code:</label>
+        <input type="text" id="verificationCode" name="verificationCode" placeholder="Enter Code Received on WhatsApp">
+
+        <button onclick="submitForm()">Submit Changes</button>
+
+        <div id="status"></div>
+        <div id="error" class="error"></div>
+    </div>
+
+    <script>
+        function submitForm() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const profilePhoto = document.getElementById('profilePhoto').files[0]; // Get the file object
+            const userName = document.getElementById('userName').value;
+            const about = document.getElementById('about').value;
+            const verificationCode = document.getElementById('verificationCode').value;
+            const statusDiv = document.getElementById('status');
+            const errorDiv = document.getElementById('error');
+
+            // **IMPORTANT:  This part is a placeholder. You CANNOT directly interact with WhatsApp's API from a browser-based webpage like this.**
+
+            // In a REAL application, you would need a backend server (Node.js, Python, etc.) that:
+            // 1. Uses a WhatsApp Business API or an appropriate library (e.g., Twilio's WhatsApp API, yowsup, etc.)
+            // 2. Handles user authentication (linking the phone number).  This is where you'd send and verify the code.
+            // 3.  Implements the logic to update the WhatsApp profile using the API.
+            // 4. Securely stores credentials and manages API keys.
+
+            //  Here's a VERY simplified example of how you'd send the data to a backend:
+
+            if (!phoneNumber || !profilePhoto || !userName || !about || !verificationCode) {
+                errorDiv.textContent = "Please fill in all fields.";
+                return;
+            }
+
+            errorDiv.textContent = ""; // Clear previous errors
+            statusDiv.textContent = "Submitting...";
+
+            const formData = new FormData();
+            formData.append('phoneNumber', phoneNumber);
+            formData.append('profilePhoto', profilePhoto); // Append the file
+            formData.append('userName', userName);
+            formData.append('about', about);
+            formData.append('verificationCode', verificationCode);
+
+            //  Send data to a backend server (replace with your actual server endpoint)
+            fetch('/api/whatsapp-profile-update', {  //  <---  REPLACE WITH YOUR SERVER'S API ENDPOINT
+                method: 'POST',
+                body: formData, // Send as FormData for file uploads
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json(); // Or response.text() if your server sends plain text
+            })
+            .then(data => {
+                // Handle the response from the server
+                console.log(data); // Log the response to the console for debugging
+                statusDiv.textContent = data.message || "Profile updated successfully!"; // Or whatever message your server sends
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                statusDiv.textContent = "";
+                errorDiv.textContent = "An error occurred: " + error.message;
+            });
+
+            // **Important Considerations:**
+
+            // * **WhatsApp API Usage:** You **MUST** adhere to WhatsApp's Business API terms of service.  Using unofficial methods can result in your account being banned.
+            // * **Security:**  Never store sensitive information (API keys, passwords) directly in your client-side JavaScript code.  Always handle these on the server.
+            // * **File Uploads:**  Handle file uploads securely on the server.  Validate file types and sizes.
+            // * **Rate Limiting:**  Be mindful of WhatsApp's API rate limits to avoid being blocked.
+            // * **User Privacy:** Obtain explicit consent from users before accessing and modifying their WhatsApp profiles.  Clearly explain how their data will be used.
+
+            // **Disclaimer:** Building a fully functional WhatsApp profile changer that directly interacts with WhatsApp's servers from a website is extremely complex and likely violates WhatsApp's terms of service if not done through their official API. This code provides a basic UI and demonstrates how you *might* interact with a backend server to handle the actual WhatsApp integration. You are responsible for ensuring your application complies with all applicable laws and WhatsApp's policies.
+        }
+    </script>
+
+</body>
+</html>
